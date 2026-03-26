@@ -5,7 +5,7 @@ from email.mime.multipart import MIMEMultipart
 from email.message import EmailMessage
 import smtplib
 import os
-
+from dotenv import load_dotenv
 def send_pet_email():
     file_path = 'new.json'
     
@@ -26,9 +26,15 @@ def send_pet_email():
         return
 
     # 2. Email Configuration (Change these!)
-    sender_email = "@gmail.com"
-    receiver_email = "@gmail.com"
-    app_password = "" # Use a Google App Password, not your login password
+
+    load_dotenv()
+
+    GEMAIL = os.getenv("GMAIL_USER")
+    SENDER_PASSWORD = os.getenv("GMAIL_KEY")
+    
+    sender_email = GEMAIL
+    receiver_email = GEMAIL
+    app_password = SENDER_PASSWORD
     
     msg = MIMEMultipart('alternative')
     msg['Subject'] = f"🐾 {len(pets)} New Pets Found!"
