@@ -39,27 +39,41 @@ def send_pet_email(new_pets_list):
         smtp.login(EMAIL_ADDRESS, EMAIL_PASSWORD)
         smtp.send_message(msg)
 
+
 def scan_cats():
     with sync_playwright() as p:
-        # headless=True is the default, but we'll be explicit
-        browser = p.chromium.launch(headless=True)
+        # 1. Added 'args' to hide the "I am a bot" flag in the browser
+        browser = p.chromium.launch(
+            headless=True, 
+            args=["--disable-blink-features=AutomationControlled"]
+        )
+        
         context = browser.new_context(
-            user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+            user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36",
+            viewport={'width': 1920, 'height': 1080}
         )
         page = context.new_page()
 
         print("Connecting to Toronto Humane Society...")
         
-        # Navigate to the site
-        page.goto("https://www.torontohumanesociety.com/cats/", wait_until="domcontentloaded")
-
-        # Wait for the cat listing container to ensure data has loaded
-        # Note: THS uses dynamic loading for their pet 'cards'
         try:
-            page.wait_for_selector(".card_sect", timeout=10000)
-            print("Cat listings detected.")
-        except:
-            print("Timeout: Could not find specific pet cards, capturing full source anyway.")
+            # 2. Changed wait_until to "commit" (faster) and increased timeout to 60s
+            page.goto("https://www.torontohumanesociety.com/cats/", 
+                      wait_until="commit", 
+                      timeout=60000)
+            
+            # 3. Give it a tiny 2-second sleep to let the cat list render
+            page.wait_for_timeout(2000) 
+            
+            print("Page loaded successfully!")
+            
+            # Optional: Save a screenshot to see if it worked
+            page.screenshot(path="cat_check.png")
+            
+        except Exception as e:
+            print(f"Still timing out: {e}")
+            # If it fails, take a screenshot of the error page
+            page.screenshot(path="error_debug.png")
 
         # Capture the rendered HTML
         html_source = page.content()
