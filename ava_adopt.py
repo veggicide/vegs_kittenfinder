@@ -17,7 +17,7 @@ def scrape_cats():
         print("Connecting ")
         
         # Navigate to the site
-        page.goto(url, wait_until="domcontentloaded")
+        page.goto(url, wait_until="load", timeout=90000)
 
         # Wait for the cat listing container to ensure data has loaded
         # Note: THS uses dynamic loading for their pet 'cards'
