@@ -68,7 +68,7 @@ def scan_cats():
             print("Page loaded successfully!")
             
             # Optional: Save a screenshot to see if it worked
-            page.screenshot(path="cat_check.png")
+            #page.screenshot(path="cat_check.png")
             
         except Exception as e:
             print(f"Still timing out: {e}")
