@@ -147,11 +147,24 @@ def scan_cats():
                 new_pets.append(pet)
 
         # 4. Report the findings
+
         if new_pets:
+            existing_new_pets = []
+            
+            # 1. Load the existing 'new' pets if the file exists
+            if os.path.exists("new.json"):
+                with open("new.json", "r", encoding="utf-8") as f:
+                    try:
+                        existing_new_pets = json.load(f)
+                    except json.JSONDecodeError:
+                        existing_new_pets = []
+
+            # 2. Add the current batch of new pets to the list
+            existing_new_pets.extend(new_pets)
+
+            # 3. Save the combined list back to the file
             with open("new.json", "w", encoding="utf-8") as f:
-                # indent=4 makes the file human-readable/pretty
-                # ensure_ascii=False handles special characters if they exist
-                json.dump(new_pets, f, indent=4, ensure_ascii=False)
+                json.dump(existing_new_pets, f, indent=4, ensure_ascii=False)
             
             #send_pet_email(new_pets)
             print(f"\n🚀 FOUND {len(new_pets)} NEW PETS!")
