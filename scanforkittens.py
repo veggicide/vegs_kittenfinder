@@ -27,9 +27,9 @@ def send_pet_email(new_pets_list):
     for p in new_pets_list:
         breed = p['details'].get('Breed', 'Unknown Breed')
         age = p['details'].get('Age', 'Unknown Age')
-        body += f"✨ NEW: {p['name']} ({breed})\n"
-        body += f"📅 Age: {age}\n"
-        body += f"🔗 Link: {p['link']}\n"
+        body += f"NEW: {p['name']} ({breed})\n"
+        body += f"Age: {age}\n"
+        body += f"Link: {p['link']}\n"
         body += "-" * 30 + "\n"
 
     msg.set_content(body)
