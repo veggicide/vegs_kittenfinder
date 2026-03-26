@@ -18,7 +18,7 @@ def send_pet_email(new_pets_list):
 
 
     msg = EmailMessage()
-    msg['Subject'] = f"🚀 {len(new_pets_list)} New Pets Found!"
+    msg['Subject'] = f"{len(new_pets_list)} New Pets Found!"
     msg['From'] = EMAIL_ADDRESS
     msg['To'] = EMAIL_ADDRESS
 
