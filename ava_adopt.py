@@ -7,11 +7,34 @@ def scrape_cats():
     url = "https://ws.petango.com/webservices/adoptablesearch/wsAdoptableAnimals.aspx?species=Cat&sex=A&agegroup=All&location=&site=&onhold=N&orderby=Name&colnum=2&css=https://sms.petpoint.com/WebServices/adoptablesearch/css/styles.css&authkey=ykyvhkpv1ae6vngswl56tmsld1o3asnjpvpadm4akvx2yxyiu3&recAmount=100&detailsInPopup=Yes&featuredPet=Include&mobile=True"
 
     with sync_playwright() as p:
+        # headless=True is the default, but we'll be explicit
         browser = p.chromium.launch(headless=True)
-        page = browser.new_page()
-        page.goto(url)
-        page.wait_for_selector(".list-animal-info-block")
+        context = browser.new_context(
+            user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+        )
+        page = context.new_page()
+
+        print("Connecting ")
+        
+        # Navigate to the site
+        page.goto(url, wait_until="domcontentloaded")
+
+        # Wait for the cat listing container to ensure data has loaded
+        # Note: THS uses dynamic loading for their pet 'cards'
+        try:
+            page.wait_for_selector(".list-animal-id", timeout=10000)
+            print("Cat listings detected.")
+        except:
+            print("Timeout: Could not find specific pet cards, capturing full source anyway.")
+
+        # Capture the rendered HTML
         source = page.content()
+
+        # Output or process the source
+        print(f"Captured {len(source)} characters of source code.")
+        
+        
+            
         browser.close()
 
     soup = BeautifulSoup(source, 'html.parser')
